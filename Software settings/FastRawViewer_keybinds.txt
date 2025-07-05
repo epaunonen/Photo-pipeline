@@ -1,0 +1,270 @@
+#FastRawViewer_Shortcuts Begin
+# File Handling
+OpenFile	Key:Ctrl+O
+FirstFile	Key:Ctrl+Shift+Left	Key:Ctrl+Shift+Num+Left
+Prev3File	Key:Ctrl+Alt+Shift+Left	Key:Ctrl+Alt+Shift+Num+Left
+Prev2File	Key:Ctrl+Alt+Left	Key:Ctrl+Alt+Num+Left
+PrevFile	Key:A	Key:Ctrl+Left	Key:Backspace	Key:Ctrl+Num+Left	Key:Left	Key:Num+Left
+NextFile	Key:D	Key:Ctrl+Right	Key:Space	Key:Ctrl+Num+Right	Key:Right	Key:Num+Right
+Next2File	Key:Ctrl+Alt+Right	Key:Ctrl+Alt+Num+Right
+Next3File	Key:Ctrl+Alt+Shift+Right	Key:Ctrl+Alt+Shift+Num+Right
+LastFile	Key:Ctrl+Shift+Right	Key:Ctrl+Shift+Num+Right
+# Folder Handling
+OpenFolder	Key:Ctrl+Shift+O
+OpenFolderwSubfolders	Key:Alt+O
+OpenFileList	Key:Alt+Shift+O
+HotfolderMode	Key:Alt+Shift+H
+SlideShowMode	Key:Alt+Shift+S
+FilterToCurrentFolder	Key:Ctrl+T
+FilterToUpperFolder	Key:Ctrl+Shift+T
+FilterGoLevelUp	Key:Shift+T
+FilterCancel	Key:Alt+T
+# Filter files in folder
+FolderFilterToggle	Key:V
+FolderFilterRemember	Key:Alt+V
+FolderFilterRecall	Key:Ctrl+V
+FolderFilterFilterByName	Key:Alt+F
+# File Handling
+RefreshFile	Key:Ctrl+F4
+# Folder Handling
+RefreshFolder	Key:Ctrl+Shift+F4
+RefreshSubfolderTree	Key:Alt+Shift+F4
+RefreshFullFolderTree	Key:Ctrl+Alt+F4
+# File Handling
+BuildThumbs	Key:Ctrl+Shift+F
+# General Functions
+ClearThumbsDB	
+# File Handling
+UnloadFile	Key:Ctrl+U
+# File Copy/Move/Reject
+MoveToFolder	Key:M
+MoveToSubFolder	Key:Alt+M
+MoveToSameFolder	Key:Shift+M
+MoveToSameFolder2	Key:Alt+Shift+M
+MoveToSameFolder3	Key:Ctrl+Shift+M
+MoveToSameFolder4	Key:Ctrl+Alt+M
+MoveToSameFolder5	Key:Ctrl+Alt+Shift+M
+CopyToFolder	Key:C
+CopyToSubFolder	Key:Alt+C
+CopyToSameFolder	Key:Shift+C
+CopyToSameFolder2	Key:Alt+Shift+C
+CopyToSameFolder3	Key:Ctrl+Shift+C
+CopyToSameFolder4	Key:Ctrl+Alt+C
+CopyToSameFolder5	Key:Ctrl+Alt+Shift+C
+# File Handling
+RenameFile	Key:Shift+F2
+# External editors
+OpenFileManager	Key:Ctrl+F
+ExternalProg1	Key:R
+ExternalProg2	Key:Alt+R
+ExternalProg3	
+ExternalProg4	
+ExternalProg5	
+ExternalProg6	
+ExternalProg7	
+ExternalProg8	
+ExternalProg9	
+ExternalProg10	
+# File Copy/Move/Reject
+MoveToSelected	Key:Ctrl+S
+DeleteFiles	Key:Ctrl+R
+UnDeleteFiles	
+# File Handling
+UndoFileOp	Key:Ctrl+Z
+# General Functions
+Preferences	Key:Ctrl+P
+KeyboardShortcuts	Key:Ctrl+K
+CustomizeBottomBar	
+ClearRecentLists	
+ExitProgram	Key:Ctrl+Q
+# Zoom-Pan
+ToggleFSGrid	Key:G
+GridRawRead	Key:Shift+G
+ZoomIn	Key:Ctrl++	Key:Ctrl+=	Wheel:Shift+WUp
+ZoomOut	Key:Ctrl+-	Wheel:Shift+WDown
+# General Functions
+FileContextMenu	Mouse:RClick
+# Zoom-Pan
+MousePanning	
+QuickZoomPan	Mouse:Shift+RClick
+MouseDrag	Mouse:LClick
+QuickZoomDrag	Mouse:Shift+LClick
+ActualPixels	
+FitToScreen	Key:Ctrl+0
+FitToWidth	Key:Ctrl+Alt+0
+ToggleZoom	Key:Z
+Fullscreen	Key:F
+ReturnFromSingleFullscreen	Key:Esc
+Minimize	
+# Image Display
+Show_RGBFullcolor	
+Show_R_Channel	
+Show_G_Channel	
+Show_B_Channel	
+Show_BW	Key:Ctrl+6
+OverlayOff	
+Overlay0	
+Overlay1	
+Overlay2	
+Overlay3	
+Overlay4	
+Overlay5	
+TurnOverlay	Key:Alt+G
+TurnJPEG	Key:J
+FocusPeak	Key:P
+FocusPeakEdge	
+FocusPeakDetails	
+ScreenSharpening	Key:S
+# Image Adjustments
+BoostShadows	Key:Shift+S
+BoostHighlights	Key:Shift+H
+LinearModeDisplay	Key:Shift+L
+OverExposure	Key:O
+UnderExposure	Key:U
+# Rotate
+Rotate_90_CCW	Key:Ctrl+7	Key:Ctrl+Home
+Rotate_90_CW	Key:Ctrl+9	Key:Ctrl+PgUp
+Rotate_180	Key:Ctrl+8	Key:Ctrl+Up
+FlipHorizontal	
+FlipVertical	
+# Image Adjustments
+WhiteBalance	Key:W
+WBDialog	Key:Alt+W
+CustomWhiteBalance	Mouse:Alt+LClick
+IncreaseContrast	Key:K
+DecreaseContrast	Key:Shift+K
+ExposureCorrection	
+ExposureCorrectionAuto	Key:Shift+A
+ExposurePlus	Key:Alt++	Key:Alt+=
+ExposurePlusBig	Key:Ctrl+Alt++	Key:Ctrl+Alt+=
+ExposureMinus	Key:Alt+-
+ExposureMinusBig	Key:Ctrl+Alt+-
+defaultRendering	Key:Ctrl+Shift+R
+# File Selection for batch
+SelectCurrent	Key:Ctrl+/
+SelectCurrentAndMoveToNex	Key:Ctrl+.	Key:Shift+Right	Key:Shift+Num+Right
+SelectCurrentAndMoveToPrev	Key:Ctrl+,	Key:Shift+Left	Key:Shift+Num+Left
+SelectAll	Key:Ctrl+A
+DeSelectAll	Key:Ctrl+D
+InvertSelect	Key:Ctrl+I
+SelectByRatingLabel	Key:Ctrl+'
+SaveSelectionToFile	
+LoadSelectionFromFile	
+AppendSelectionFromFile	
+# Batch rotation
+BatchRotate_90_CCW	
+BatchRotate_90_CW	
+BatchRotate_180	
+BatchFlipHorizontal	
+BatchFlipVertical	
+# Batch rating
+Batch_XMPRReject	
+Batch_XMPNoRating	
+Batch_XmpRating1	
+Batch_XmpRating2	
+Batch_XmpRating3	
+Batch_XmpRating4	
+Batch_XmpRating5	
+Batch_XmpRatingMinus	
+Batch_XmpRatingPlus	
+# Batch label
+Batch_XMPNoLabel	
+Batch_XMPLabelSelect	
+Batch_XMPLabelSecond	
+Batch_XMPLabelApproved	
+Batch_XMPLabelReview	
+Batch_XMPLabelToDo	
+Batch_XMPIPTCEdit	
+# Batch copy/move
+BatchMoveToFolder	
+BatchMoveToSubFolder	
+BatchMoveToSameFolder	
+BatchMoveToSameFolder2	
+BatchMoveToSameFolder3	
+BatchMoveToSameFolder4	
+BatchMoveToSameFolder5	
+BatchCopyToFolder	
+BatchCopyToSubFolder	
+BatchCopyToSameFolder	
+BatchCopyToSameFolder2	
+BatchCopyToSameFolder3	
+BatchCopyToSameFolder4	
+BatchCopyToSameFolder5	
+# File Selection for batch
+BatchRenameFiles	
+BatchRefreshFile	
+# Batch external edit
+Batch_ExternalProg1	
+Batch_ExternalProg2	
+Batch_ExternalProg3	
+Batch_ExternalProg4	
+Batch_ExternalProg5	
+Batch_ExternalProg6	
+Batch_ExternalProg7	
+Batch_ExternalProg8	
+Batch_ExternalProg9	
+Batch_ExternalProg10	
+# Batch copy/move
+BatchMoveToSelected	
+BatchDeleteFiles	
+BatchUnDeleteFiles	
+# Multi-window operations
+Window_Layout1	Key:B
+Window_Layout2	Key:Alt+B
+Window_Layout2Copy	Key:Alt+Shift+B
+Window_Layout4	Key:Ctrl+B
+Window_Layout4Copy	Key:Ctrl+Shift+B
+Window_Copy0	Key:Y
+Window_Copy1	
+Window_Copy2	
+Window_CopyGoNext0	Key:Alt+Y
+Window_CopyGoNext1	
+Window_CopyGoNext2	
+Window_CopyFrom0	Key:Shift+Y
+Window_CopyFrom1	
+Window_CopyFrom2	
+Window_Swap0	Key:Ctrl+Y
+Window_Swap1	
+Window_Swap2	
+Window_CopySettings0	Key:Ctrl+Shift+Y
+Window_CopySettings1	
+Window_CopySettings2	
+Window_ClearWindow0	
+Window_ClearWindow1	
+Window_ClearWindow2	
+# Information Panels
+Window_Histogram	Key:F2
+Window_EXIF	Key:F3
+Window_Stats	Key:F4
+Window_XMP	Key:F5
+Window_Filmstrip	Key:F6
+Window_Folders	Key:F7
+Window_FavoriteFolders	Key:Shift+F7
+Window_SortFilter	Key:F8
+HideAll	Key:Tab
+WindowFocusToFolders	Key:Ctrl+F7
+WindowFocusToFavoriteFolders	Key:Ctrl+Shift+F7
+WindowFocusToGrid	Key:Ctrl+G
+WindowFocusToFilmstrip	Key:Ctrl+F6
+WindowReset	Key:Alt+F10
+SaveWorkspace	Key:Shift+F10
+LoadWorkspace	Key:Ctrl+F10
+# XMP Rating
+XMPRReject	Key:Alt+Del
+XMPNoRating	Key:0
+XmpRating1	Key:1
+XmpRating2	Key:2
+XmpRating3	Key:3
+XmpRating4	Key:4
+XmpRating5	Key:5
+XmpRatingMinus	Key:-
+XmpRatingPlus	Key:+
+# XMP Labels
+XMPNoLabel	
+XMPLabelSelect	Key:Alt+6
+XMPLabelSecond	Key:Alt+7
+XMPLabelApproved	Key:Alt+8
+XMPLabelReview	Key:Alt+9
+XMPLabelToDo	
+XMPIPTCEdit	Key:Alt+D
+#FastRawViewer_ShortcutsEnd

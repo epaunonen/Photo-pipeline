@@ -1,6 +1,7 @@
 import configparser
-import shutil
+from datetime import datetime, timedelta
 import os
+import shutil
 import subprocess
 
 from nicegui import ui
@@ -28,6 +29,13 @@ CFG_archive_on_process = config['Process']['archive_on_process']
 CGF_label_denoise_override = config['Labels']['label_denoise_override']
 CFG_label_stack = config['Labels']['label_stack']
 
+# Misc
+CFG_keep_rejected_days = config['Misc']['keep_rejected_days']
+CFG_delete_raws_with_missing_timestamp = config['Misc']['delete_raws_with_missing_timestamp']
+
+
+# Helpers
+HELPER_n_of_files_to_be_deleted = 0
 
 # Define directory paths
 DIR_Unculled = '1_Unculled'
@@ -36,6 +44,10 @@ DIR_Unculled_Rejected = '1_Unculled/_Rejected'
 DIR_Unedited = '2_Unedited'
 DIR_Exported = '3_Exported'
 DIR_Raw_Archive = '4_Raw_Archive'
+
+
+def copy_from_card():
+    pass
 
 
 def cull_raws():
@@ -72,7 +84,6 @@ def process_selected():
                     denoise_command.append(os.getcwd() + '/' + DIR_Unculled_Selected + '/' + filename)
                     
         p = subprocess.Popen(denoise_command)
-        p.wait()
                     
     # Denoise single images
     # Only explicitly marked photos are imported to DxO PureRaw
@@ -108,8 +119,8 @@ def archive_raws():
                     
                     # Determine destination
                     destination_year = filename[0:4]
-                    destination_month = filename[5:6]
-                    destination_day = filename[7:8]
+                    destination_month = filename[4:6]
+                    destination_day = filename[6:8]
                     destination = DIR_Raw_Archive + '/' + destination_year + '/' + destination_month + '/' + destination_day
                     
                     # Create destination directory if missing
@@ -121,23 +132,128 @@ def archive_raws():
                     shutil.move(source, destination)            
       
 def edit():
-    pass
-                  
-def cleanup_rejected():
-    pass
+    edit_command = []
+    if CFG_module_edit == 'darktable': edit_command.append(CFG_path_darktable)
+    # add other options?
+    
+    #edit_command.append('-d')
+    #edit_command.append('all')
+    #edit_command.append(os.getcwd() + '\\' + DIR_Unedited)
+                
+    #print(edit_command)    
+    p = subprocess.Popen(edit_command)
+    
+    
+def export():
+    
+    xmps_for_archival = []
+    files_for_export = []
+    
+    if(os.path.isdir(DIR_Unedited)):
+        for file in os.listdir(DIR_Unedited):
+            filename = os.fsdecode(file)
+            filepath = os.getcwd() + '/' + DIR_Unedited + '/' + filename
+            
+            # read tags from xmp
+            # reading as a text file is enough!
+            if filename.endswith('.xmp'): 
+                with open(filepath) as f:
+                    if('READYFOREXPORT' in f.read()):
+                        xmps_for_archival.append(filepath)
+                        files_for_export.append(filepath[:-4])
+                        
+    #print(xmps_for_archival)
+    #print(files_for_export)
+                
 
+# Deletes rejected RAWs over CFG_keep_rejected_days old       
+async def cleanup_rejected():
+    current_date = datetime.now().date()
+    
+    files_to_be_removed = []
+    
+    if(os.path.isdir(DIR_Unculled_Rejected)):
+        for file in os.listdir(DIR_Unculled_Rejected):
+                filename = os.fsdecode(file)
+                
+                try: 
+                    file_date = datetime.strptime(filename[0:8], '%Y%m%d').date()
+                except:
+                    if(CFG_delete_raws_with_missing_timestamp == 'True'):
+                        files_to_be_removed.append(DIR_Unculled_Rejected + '/' + file)
+                    else:
+                        print(f'Invalid filename {filename}, skipping...')
+                    continue
+                
+                if current_date > file_date + timedelta(days=int(CFG_keep_rejected_days)):
+                    files_to_be_removed.append(DIR_Unculled_Rejected + '/' + file)
+                    
+    result = await show()
+    if(result == 'Yes'):
+        ui.notify('Rejected RAWs cleared!')
+        for file in files_to_be_removed:
+            os.remove(file)
+    
 
 # Create UI
 dark = ui.dark_mode()
 dark.enable()
 
-with ui.grid(rows=5).classes('items-start'):
-    ui.button('1. Cull', on_click=lambda: cull_raws())
-    ui.button('2. Process Selected', on_click=lambda: process_selected())
-    ui.button('3. Archive RAWs', on_click=lambda: archive_raws())
-    ui.button('4. Edit', on_click=lambda: edit())
-    with ui.row().classes('w-full no-wrap'):
-        ui.button(icon='delete_sweep', on_click=lambda: cleanup_rejected()).classes('w-1/2')
-        ui.button('Exit', on_click=lambda: quit()).classes('w-1/2')
+# Dialog for cleanup rejected
+with ui.dialog() as dialog, ui.card():
+    ui.label(f'Really clear rejected raws')
+    ui.label(f'over {CFG_keep_rejected_days} day(s) old?')
+    with ui.row():
+        ui.button('Yes', on_click=lambda: dialog.submit('Yes'))
+        ui.button('No', on_click=lambda: dialog.submit('No'))
+        
+async def show():
+    result = await dialog
+    return result
 
-ui.run()
+
+# Actual UI
+with ui.grid(rows=8, columns=5).classes('items-start').style('row-gap: 0.001rem'):
+    
+    # Labels
+    ui.markdown('####Photos').classes('col-span-2')
+    ui.space().classes('col-span-1')
+    ui.markdown('####Video').classes('col-span-2')
+    
+    # Actions
+    ui.button('0. Get Files', on_click=lambda: copy_from_card()).classes('col-span-2')
+    ui.space().classes('col-span-1')
+    ui.button('Button').classes('col-span-2')
+    
+    ui.button('1. Cull', on_click=lambda: cull_raws()).classes('col-span-2')
+    ui.space().classes('col-span-1')
+    ui.button('Button').classes('col-span-2')
+    
+    ui.button('2. Process', on_click=lambda: process_selected()).classes('col-span-2')
+    ui.space().classes('col-span-1')
+    ui.button('Button').classes('col-span-2')
+    
+    ui.button('3. Archive RAWs', on_click=lambda: archive_raws()).classes('col-span-2')
+    ui.space().classes('col-span-1')
+    ui.button('Button').classes('col-span-2')
+    
+    ui.button('4. Edit', on_click=lambda: edit()).classes('col-span-2')
+    ui.space().classes('col-span-1')
+    ui.button('Button').classes('col-span-2')
+    
+    ui.button('5. Export', on_click=lambda: export()).classes('col-span-2')
+    ui.space().classes('col-span-1')
+    ui.button('Button').classes('col-span-2')
+    
+    with ui.row().classes('col-span-2 no-wrap'):#.classes('w-full no-wrap'):
+        ui.button(icon='delete_sweep', on_click=lambda: cleanup_rejected()).classes('w-1/2')
+        #ui.space().classes('w-1/2')
+        ui.button(icon='refresh', on_click=lambda: None).classes('w-1/2')
+    ui.space().classes('col-span-1')
+    with ui.row().classes('col-span-2 no-wrap'):#.classes('w-full no-wrap'):
+        ui.button(icon='delete_sweep', on_click=lambda: None).classes('w-1/2')
+        ui.space().classes('w-1/2')
+        #ui.button('Exit', on_click=lambda: quit()).classes('w-1/2')
+    
+
+ui.run(favicon="icon.png", title="Photo-pipeline")

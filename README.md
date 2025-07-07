@@ -1,4 +1,4 @@
-# Photo-pipeline
+# FramePipe Photo-pipeline
 
 
 <img src="icon.png" alt="Logo" width="300">

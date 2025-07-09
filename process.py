@@ -32,7 +32,8 @@ CFG_label_stack = config['Labels']['label_stack']
 # Misc
 CFG_keep_rejected_days = config['Misc']['keep_rejected_days']
 CFG_delete_raws_with_missing_timestamp = config['Misc']['delete_raws_with_missing_timestamp']
-
+CFG_RAW_filetype = config['Misc']['RAW_filetype']
+CFG_metadata_filetype = config['Misc']['metadata_filetype']
 
 # Helpers
 HELPER_n_of_files_to_be_deleted = 0
@@ -44,6 +45,37 @@ DIR_Unculled_Rejected = '1_Unculled/_Rejected'
 DIR_Unedited = '2_Unedited'
 DIR_Exported = '3_Exported'
 DIR_Raw_Archive = '4_Raw_Archive'
+
+
+
+def get_files_in_directory(directory_path, file_ending=None, content_filter=None):
+    
+    files_in_dir = []
+    
+    if(os.path.isdir(directory_path)):
+        for file in os.listdir(directory_path):
+                filename = os.fsdecode(file)
+                filepath = os.getcwd() + '/' + directory_path + '/' + filename
+                
+                if file_ending == None:
+                    if content_filter == None:
+                        files_in_dir.append(filename)
+                    else:
+                        with open(filepath) as f:
+                            if(content_filter in f.read()):
+                                files_in_dir.append(filename)
+                                
+                elif filename.endswith(file_ending):
+                    if content_filter == None:
+                        files_in_dir.append(filename)
+                    else:
+                        with open(filepath) as f:
+                            if(content_filter in f.read()):
+                                files_in_dir.append(filename)
+        return files_in_dir
+    return None
+
+
 
 
 def copy_from_card():
@@ -80,7 +112,7 @@ def process_selected():
             for file in os.listdir(DIR_Unculled_Selected):
                 filename = os.fsdecode(file)
                 
-                if filename.endswith('.ARW'):
+                if filename.endswith(CFG_RAW_filetype):
                     denoise_command.append(os.getcwd() + '/' + DIR_Unculled_Selected + '/' + filename)
                     
         p = subprocess.Popen(denoise_command)
@@ -108,7 +140,7 @@ def archive_raws():
                 filename = os.fsdecode(file)
                 
                 # Archive RAWs and metadata
-                if filename.endswith('.ARW') or filename.endswith('.xmp'):
+                if filename.endswith(CFG_RAW_filetype) or filename.endswith(CFG_metadata_filetype):
                     
                     # Check if file with same name exists in the editing layer -> proceed with archiving; else skip as the photo has not been processed yet!
                     if filename.split('.')[0] not in filenames_in_edit:
@@ -156,7 +188,7 @@ def export():
             
             # read tags from xmp
             # reading as a text file is enough!
-            if filename.endswith('.xmp'): 
+            if filename.endswith(CFG_metadata_filetype): 
                 with open(filepath) as f:
                     if('READYFOREXPORT' in f.read()):
                         xmps_for_archival.append(filepath)
@@ -213,47 +245,42 @@ async def show():
 
 
 # Actual UI
-with ui.grid(rows=8, columns=5).classes('items-start').style('row-gap: 0.001rem'):
+#with ui.grid(rows=20, columns=1).classes('items-start').style('row-gap: 0.1rem'):
+with ui.column().classes('w-full no-wrap').style('row-gap: 1rem'):
     
     # Labels
-    ui.markdown('####Photos').classes('col-span-2')
-    ui.space().classes('col-span-1')
-    ui.markdown('####Video').classes('col-span-2')
-    
+    ui.markdown('####Photos')#.classes('col-span-2')
     # Actions
-    ui.button('0. Get Files', on_click=lambda: copy_from_card()).classes('col-span-2')
-    ui.space().classes('col-span-1')
-    ui.button('Button').classes('col-span-2')
+    ui.button('0. Get Files', on_click=lambda: copy_from_card()).classes('w-1/6')#.classes('col-span-2')
+    ui.separator().classes('w-1/6')
     
-    ui.button('1. Cull', on_click=lambda: cull_raws()).classes('col-span-2')
-    ui.space().classes('col-span-1')
-    ui.button('Button').classes('col-span-2')
+    ui.label(f'Unculled files: {len(get_files_in_directory(DIR_Unculled, file_ending=CFG_RAW_filetype))}')
+    ui.button('1. Cull', on_click=lambda: cull_raws()).classes('w-1/6')#.classes('col-span-2')
+    ui.separator().classes('w-1/6')
+
+    ui.label(f'Selected files: {len(get_files_in_directory(DIR_Unculled_Selected, file_ending=CFG_RAW_filetype))}')
+    ui.button('2. Process', on_click=lambda: process_selected()).classes('w-1/6')
+    ui.button('3. Archive RAWs', on_click=lambda: archive_raws()).classes('w-1/6')
+    ui.separator().classes('w-1/6')
+
+    ui.label(f'Files waiting for editing: {len(get_files_in_directory(DIR_Unedited, file_ending=".dng"))}')    
+    ui.button('4. Edit', on_click=lambda: edit()).classes('w-1/6')
+    ui.separator().classes('w-1/6')
+
+    ui.label(f'Files ready for export: {len(get_files_in_directory(DIR_Unedited, file_ending=CFG_metadata_filetype, content_filter="READYFOREXPORT"))}')    
+    ui.button('5. Export', on_click=lambda: export()).classes('w-1/6')
+    ui.separator().classes('w-1/6')
+
     
-    ui.button('2. Process', on_click=lambda: process_selected()).classes('col-span-2')
-    ui.space().classes('col-span-1')
-    ui.button('Button').classes('col-span-2')
-    
-    ui.button('3. Archive RAWs', on_click=lambda: archive_raws()).classes('col-span-2')
-    ui.space().classes('col-span-1')
-    ui.button('Button').classes('col-span-2')
-    
-    ui.button('4. Edit', on_click=lambda: edit()).classes('col-span-2')
-    ui.space().classes('col-span-1')
-    ui.button('Button').classes('col-span-2')
-    
-    ui.button('5. Export', on_click=lambda: export()).classes('col-span-2')
-    ui.space().classes('col-span-1')
-    ui.button('Button').classes('col-span-2')
-    
-    with ui.row().classes('col-span-2 no-wrap'):#.classes('w-full no-wrap'):
+    with ui.row().classes('w-1/6 no-wrap'):#('col-span-2 no-wrap'):
         ui.button(icon='delete_sweep', on_click=lambda: cleanup_rejected()).classes('w-1/2')
         #ui.space().classes('w-1/2')
         ui.button(icon='refresh', on_click=lambda: None).classes('w-1/2')
-    ui.space().classes('col-span-1')
-    with ui.row().classes('col-span-2 no-wrap'):#.classes('w-full no-wrap'):
-        ui.button(icon='delete_sweep', on_click=lambda: None).classes('w-1/2')
-        ui.space().classes('w-1/2')
-        #ui.button('Exit', on_click=lambda: quit()).classes('w-1/2')
+    #ui.space().classes('col-span-1')
+    # with ui.row().classes('col-span-2 no-wrap'):#.classes('w-full no-wrap'):
+    #     ui.button(icon='delete_sweep', on_click=lambda: None).classes('w-1/2')
+    #     ui.space().classes('w-1/2')
+    #     #ui.button('Exit', on_click=lambda: quit()).classes('w-1/2')
     
 
 ui.run(favicon="icon.png", title="Photo-pipeline")

@@ -13,5 +13,8 @@
 
 https://github.com/krupkat/xpano
 
+[sequator](https://sites.google.com/view/sequator/)
+
 ## Videos
+
 

@@ -118,7 +118,7 @@ def archive_raws(CFG_archive_on_process, CFG_RAW_filetype, CFG_metadata_filetype
                     # Move file
                     shutil.move(source, destination)            
       
-def edit(CFG_module_edit, CFG_path_darktable):
+def edit(CFG_module_edit, CFG_path_darktable, DIR_Unedited):
     edit_command = []
     if CFG_module_edit == 'darktable': edit_command.append(CFG_path_darktable)
     # add other options?
@@ -126,7 +126,8 @@ def edit(CFG_module_edit, CFG_path_darktable):
     #edit_command.append('-d')
     #edit_command.append('all')
     #edit_command.append(os.getcwd() + '\\' + DIR_Unedited)
-                
+             
+    #edit_command.append(os.getcwd() + '/' + DIR_Unedited + '/20250705_00006.dng')
     #print(edit_command)    
     p = subprocess.Popen(edit_command)
     

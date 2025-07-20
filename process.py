@@ -14,6 +14,13 @@ class Pipelineprocess():
         self.CFG_path_fastrawviewer = ''
         self.CFG_path_dxopureraw = ''
         self.CFG_path_darktable = ''
+        
+        self.CFG_path_exiftool = ''
+        
+        self.CFG_path_shutterencoder = '' 
+        self.CFG_path_davinciresolve = ''
+        
+        self.CFG_path_memorycard_root = ''
 
         # Modules
         self.CFG_module_cull = ''
@@ -52,6 +59,13 @@ class Pipelineprocess():
         self.CFG_path_fastrawviewer = self.config['Program paths']['path_fastrawviewer']
         self.CFG_path_dxopureraw = self.config['Program paths']['path_dxopureraw']
         self.CFG_path_darktable = self.config['Program paths']['path_darktable']
+        
+        self.CFG_path_exiftool = self.config['Program paths']['path_exiftool']
+        
+        self.CFG_path_shutterencoder = self.config['Program paths']['path_shutterencoder'] 
+        self.CFG_path_davinciresolve = self.config['Program paths']['path_davinciresolve']
+        
+        self.CFG_path_memorycard_root = self.config['Program paths']['path_memorycard_root']
 
         # Modules
         self.CFG_module_cull = self.config['Modules']['module_cull']
@@ -79,13 +93,26 @@ class Pipelineprocess():
 
     def start_process(self):
         
-        button_color_photos = '#284b82'
-        button_color_delete = '#822831'
-        
-        button_color_video = "#7C2882"
-        
         # load initial configuration
         self.reload_config()
+        
+        # check if memory card found
+        if os.path.isdir(self.CFG_path_memorycard_root):
+            memory_card_found = True
+        else:
+            memory_card_found = False
+        
+        # create colors
+        button_color_photos = '#284b82'
+        button_color_delete = '#822831'
+        button_color_photos_getfiles = '#525151'
+        
+        button_color_video = "#7C2882"
+        button_color_video_getfiles = '#525151'
+        
+        if memory_card_found: 
+            button_color_photos_getfiles = "#7a9645"
+            button_color_video_getfiles = "#7a9645"
         
         # Create UI
         dark = ui.dark_mode()
@@ -116,7 +143,11 @@ class Pipelineprocess():
  
                 with ui.column().classes('w-full no-wrap').style('row-gap: 1rem'):
                     
-                    ui.button('0. Get Files', on_click=lambda: copy_from_card(), color=button_color_photos).classes('w-full')#.classes('col-span-2')
+                    if memory_card_found:
+                        ui.label(f'Directory found at specified memory card location {self.CFG_path_memorycard_root}')
+                    else:
+                        ui.label(f'No directory found at specified memory card location {self.CFG_path_memorycard_root}')
+                    ui.button('0. Get Files', on_click=lambda: copy_from_card(), color=button_color_photos_getfiles).classes('w-full')#.classes('col-span-2')
                     ui.separator().classes('w-full')
                     
                     ui.label(f'Unculled files: {len(get_files_in_directory(self.DIR_Unculled, file_ending=self.CFG_RAW_filetype))}')
@@ -144,8 +175,19 @@ class Pipelineprocess():
             # Video
             with ui.tab_panel(video):
                 
-                ui.button('0. Get Files', on_click=lambda: copy_from_card(), color=button_color_video).classes('w-full')#.classes('col-span-2')
+                ui.button('0. Get Files', on_click=lambda: copy_from_card(), color=button_color_video_getfiles).classes('w-full')#.classes('col-span-2')
                 ui.separator().classes('w-full')
+                
+                ui.button('1. Convert', on_click=lambda: None, color=button_color_video).classes('w-full')
+                ui.separator().classes('w-full')
+                
+                ui.button('2. Edit', on_click=lambda: None, color=button_color_video).classes('w-full')
+                ui.separator().classes('w-full')
+                
+                with ui.row().classes('w-full no-wrap'):#('col-span-2 no-wrap'):
+                        #ui.button(icon='delete_sweep', on_click=lambda: cleanup_rejected(self.CFG_delete_raws_with_missing_timestamp, self.CFG_keep_rejected_days, self.DIR_Unculled_Rejected, show, ui), color=button_color_delete).classes('w-1/2')
+                        ui.space().classes('w-1/2')
+                        ui.button(icon='refresh', on_click=lambda: self.reload_config(refresh=True), color=button_color_video).classes('w-1/2')
 
         ui.run(favicon="icon.png", title="Photo-pipeline")
 

@@ -2,9 +2,22 @@ import os
 from datetime import datetime, timedelta
 import shutil
 import subprocess
+from exiftool import ExifToolHelper
 
 
 def get_files_in_directory(directory_path, file_ending=None, content_filter=None):
+    """_summary_
+
+    Helper function for obtaining a list of all files in a folder that match a specified filetype, and optionally, content
+
+    Args:
+        directory_path (_type_): _description_
+        file_ending (_type_, optional): _description_. Defaults to None.
+        content_filter (_type_, optional): _description_. Defaults to None.
+
+    Returns:
+        _type_: _description_
+    """
     
     files_in_dir = []
     
@@ -33,11 +46,89 @@ def get_files_in_directory(directory_path, file_ending=None, content_filter=None
 
 
 
-def copy_from_card():
-    pass
+
+
+def copy_from_card(CFG_path_exiftool, CFG_RAW_filetype, DIR_Unculled):
+    """_summary_
+
+    Args:
+        CFG_path_exiftool (_type_): _description_
+        CFG_RAW_filetype (_type_): _description_
+        DIR_Unculled (_type_): _description_
+    """
+    
+    
+    rename_raws(CFG_path_exiftool, CFG_RAW_filetype, DIR_Unculled)
+    
+
+
+
+
+def rename_raws(CFG_path_exiftool, CFG_RAW_filetype, DIR_Unculled):
+    """_summary_
+
+    Renames all matching RAW-files in the specified Unculled-directory.
+    
+    New filename follows the schema of yyyyMMdd_nnnnnn
+    
+    where date is obtained from image EXIF-data, and nnnnn is an unique increasing id separately for each distinct date.
+        
+    Args:
+        CFG_path_exiftool (_type_): _description_
+        CFG_RAW_filetype (_type_): _description_
+        DIR_Unculled (_type_): _description_
+    """
+    
+    running_ids = {}
+    
+    # Start exiftool only once
+    with ExifToolHelper(executable=CFG_path_exiftool) as et:
+
+        # loop all files
+        for file in os.listdir(DIR_Unculled):
+                filename = os.fsdecode(file)
+                
+                # only process matching raws
+                if filename.endswith(CFG_RAW_filetype):
+                    
+                    filepath = os.getcwd() + '/' + DIR_Unculled + '/'
+                    
+                    # Get only datetime
+                    d = et.get_tags(filepath + filename, tags=["DateTimeOriginal"])
+                    date = d[0]['EXIF:DateTimeOriginal'].split(' ')[0].replace(':', '')
+
+                    # Add date as a key if it doesn't already exist
+                    if date not in running_ids:
+                        running_ids[date] = 0
+                    
+                    # Increase running id by one
+                    running_ids[date] += 1
+                    
+                    # Generate new filename
+                    new_filename = f'{date}_{running_ids[date]:05d}'
+                    
+                    # Rename the file
+                    os.rename(filepath + filename, filepath + new_filename + CFG_RAW_filetype)
+                    
+                    # Rename matching .xmp as well, if one has already been generated
+                    # This should be redundant under normal usage
+                    if os.path.exists(filepath + filename[0:-4] + '.xmp'):
+                        os.rename(filepath + filename[0:-4] + '.xmp', filepath + new_filename[0:-4] + '.xmp')
+
+
+
 
 
 def cull_raws(CFG_module_cull, CFG_path_fastrawviewer, DIR_Unculled):
+    """_summary_
+
+    Opens FastRawViewer for culling raws
+
+    Args:
+        CFG_module_cull (_type_): _description_
+        CFG_path_fastrawviewer (_type_): _description_
+        DIR_Unculled (_type_): _description_
+    """
     
     cull_command = []
     if CFG_module_cull == 'FastRawViewer': cull_command.append(CFG_path_fastrawviewer)
@@ -45,11 +136,25 @@ def cull_raws(CFG_module_cull, CFG_path_fastrawviewer, DIR_Unculled):
     cull_command.append(os.getcwd() + '/' + DIR_Unculled)
 
     p = subprocess.Popen(cull_command)
-    #print('Cull complete')
 
-# Processes the raw files in _Selected using the defined denoising strategy
-# Archives the original raw files into 4_Raw_Archive
+
+
+
+
 def process_selected(CFG_module_denoise, CFG_path_dxopureraw, CFG_denoise_on_process, CFG_RAW_filetype, DIR_Unculled_Selected):
+    """_summary_
+
+    Processes the raw files in _Selected using the defined denoising strategy
+    
+    Archives the original raw files into 4_Raw_Archive
+
+    Args:
+        CFG_module_denoise (_type_): _description_
+        CFG_path_dxopureraw (_type_): _description_
+        CFG_denoise_on_process (_type_): _description_
+        CFG_RAW_filetype (_type_): _description_
+        DIR_Unculled_Selected (_type_): _description_
+    """
     
     denoise_command = []
     if CFG_module_denoise == 'DxOPureRaw5': denoise_command.append(CFG_path_dxopureraw)
@@ -79,7 +184,21 @@ def process_selected(CFG_module_denoise, CFG_path_dxopureraw, CFG_denoise_on_pro
         pass
     
     
+    
+    
+    
 def archive_raws(CFG_archive_on_process, CFG_RAW_filetype, CFG_metadata_filetype, DIR_Unculled_Selected, DIR_Unedited, DIR_Raw_Archive):
+    """_summary_
+
+    Args:
+        CFG_archive_on_process (_type_): _description_
+        CFG_RAW_filetype (_type_): _description_
+        CFG_metadata_filetype (_type_): _description_
+        DIR_Unculled_Selected (_type_): _description_
+        DIR_Unedited (_type_): _description_
+        DIR_Raw_Archive (_type_): _description_
+    """
+    
     # Archive files that have been processed
     if(CFG_archive_on_process == 'True'):
         
@@ -118,7 +237,19 @@ def archive_raws(CFG_archive_on_process, CFG_RAW_filetype, CFG_metadata_filetype
                     # Move file
                     shutil.move(source, destination)            
       
+      
+      
+      
+      
 def edit(CFG_module_edit, CFG_path_darktable, DIR_Unedited):
+    """_summary_
+
+    Args:
+        CFG_module_edit (_type_): _description_
+        CFG_path_darktable (_type_): _description_
+        DIR_Unedited (_type_): _description_
+    """
+    
     edit_command = []
     if CFG_module_edit == 'darktable': edit_command.append(CFG_path_darktable)
     # add other options?
@@ -132,7 +263,16 @@ def edit(CFG_module_edit, CFG_path_darktable, DIR_Unedited):
     p = subprocess.Popen(edit_command)
     
     
+    
+    
+    
 def export(CFG_metadata_filetype, DIR_Unedited):
+    """_summary_
+
+    Args:
+        CFG_metadata_filetype (_type_): _description_
+        DIR_Unedited (_type_): _description_
+    """
     
     xmps_for_archival = []
     files_for_export = []
@@ -153,9 +293,25 @@ def export(CFG_metadata_filetype, DIR_Unedited):
     #print(xmps_for_archival)
     #print(files_for_export)
                 
-
-# Deletes rejected RAWs over CFG_keep_rejected_days old       
+  
+  
+  
+  
 async def cleanup_rejected(CFG_delete_raws_with_missing_timestamp, CFG_keep_rejected_days, DIR_Unculled_Rejected, show, ui):
+    """_summary_
+
+    Deletes rejected RAWs over CFG_keep_rejected_days old
+    
+    ToDo: Currently bases detection on filename. EXIF-date should be used instead for more fool-proofness.
+
+    Args:
+        CFG_delete_raws_with_missing_timestamp (_type_): _description_
+        CFG_keep_rejected_days (_type_): _description_
+        DIR_Unculled_Rejected (_type_): _description_
+        show (_type_): _description_
+        ui (_type_): _description_
+    """
+    
     current_date = datetime.now().date()
     
     files_to_be_removed = []
@@ -181,3 +337,17 @@ async def cleanup_rejected(CFG_delete_raws_with_missing_timestamp, CFG_keep_reje
         ui.notify('Rejected RAWs cleared!')
         for file in files_to_be_removed:
             os.remove(file)
+            
+           
+           
+           
+            
+def test_exif(CFG_path_exiftool, image):
+    with ExifToolHelper(executable=CFG_path_exiftool) as et:
+        # for d in et.get_metadata(image):
+        #     for k, v in d.items():
+        #         print(f'{k} = {v}')
+        
+        # Get only datetime
+        d = et.get_tags(image, tags=["DateTimeOriginal"])
+        print(d[0]['EXIF:DateTimeOriginal'])

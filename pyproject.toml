@@ -8,8 +8,8 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
 dependencies = [
-    "exif (>=1.6.1,<2.0.0)",
-    "nicegui (>=2.20.0,<3.0.0)"
+    "nicegui (>=2.20.0,<3.0.0)",
+    "pyexiftool (>=0.5.6,<0.6.0)"
 ]
 
 

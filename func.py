@@ -1,3 +1,4 @@
+import glob
 import os
 from datetime import datetime, timedelta
 import shutil
@@ -48,7 +49,7 @@ def get_files_in_directory(directory_path, file_ending=None, content_filter=None
 
 
 
-def copy_from_card(CFG_path_exiftool, CFG_RAW_filetype, DIR_Unculled):
+def copy_from_card(CFG_path_memorycard_photo_root, CFG_path_exiftool, CFG_RAW_filetype, DIR_Unculled):
     """_summary_
 
     Args:
@@ -57,12 +58,19 @@ def copy_from_card(CFG_path_exiftool, CFG_RAW_filetype, DIR_Unculled):
         DIR_Unculled (_type_): _description_
     """
     
+    # Recursively copy files only -> Unculled directory
+    for p in glob.glob(CFG_path_memorycard_photo_root, recursive=True):
+        if os.path.isfile(p):
+            shutil.copy(p, DIR_Unculled)
     
+    
+    # Run rename for 
     rename_raws(CFG_path_exiftool, CFG_RAW_filetype, DIR_Unculled)
     
 
 
-
+# TODO: switch DIR_Unculled to any folder?
+# Additionally stop hardcoding cfg-params
 
 def rename_raws(CFG_path_exiftool, CFG_RAW_filetype, DIR_Unculled):
     """_summary_
@@ -266,7 +274,7 @@ def edit(CFG_module_edit, CFG_path_darktable, DIR_Unedited):
     
     
     
-def export(CFG_metadata_filetype, DIR_Unedited):
+async def export(CFG_metadata_filetype, DIR_Unedited, DIR_Exported, CFG_path_darktable_cli):
     """_summary_
 
     Args:
@@ -289,6 +297,22 @@ def export(CFG_metadata_filetype, DIR_Unedited):
                     if('READYFOREXPORT' in f.read()):
                         xmps_for_archival.append(filepath)
                         files_for_export.append(filepath[:-4])
+     
+    # this actually works :o
+    
+    for file in files_for_export:
+        
+        outputname = file.split('/')[-1].split('.')[0]
+        
+        export_command = []
+        export_command.append(CFG_path_darktable_cli)
+        export_command.append(file)
+        export_command.append(DIR_Exported + '/' + outputname + '.jpg')
+        
+        print(export_command)
+        
+        p = subprocess.Popen(export_command)
+        p.wait()
                         
     #print(xmps_for_archival)
     #print(files_for_export)

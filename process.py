@@ -14,6 +14,7 @@ class Pipelineprocess():
         self.CFG_path_fastrawviewer = ''
         self.CFG_path_dxopureraw = ''
         self.CFG_path_darktable = ''
+        self.CFG_path_darktable_cli = ''
         
         self.CFG_path_exiftool = ''
         
@@ -21,6 +22,7 @@ class Pipelineprocess():
         self.CFG_path_davinciresolve = ''
         
         self.CFG_path_memorycard_root = ''
+        self.CFG_path_memorycard_photo_root = ''
 
         # Modules
         self.CFG_module_cull = ''
@@ -59,13 +61,16 @@ class Pipelineprocess():
         self.CFG_path_fastrawviewer = self.config['Program paths']['path_fastrawviewer']
         self.CFG_path_dxopureraw = self.config['Program paths']['path_dxopureraw']
         self.CFG_path_darktable = self.config['Program paths']['path_darktable']
+        self.CFG_path_darktable_cli = self.config['Program paths']['path_darktable_cli']
         
         self.CFG_path_exiftool = self.config['Program paths']['path_exiftool']
         
         self.CFG_path_shutterencoder = self.config['Program paths']['path_shutterencoder'] 
         self.CFG_path_davinciresolve = self.config['Program paths']['path_davinciresolve']
         
-        self.CFG_path_memorycard_root = self.config['Program paths']['path_memorycard_root']
+        # Directoy paths
+        self.CFG_path_memorycard_root = self.config['Directory paths']['path_memorycard_root']
+        self.CFG_path_memorycard_photo_root = self.config['Directory paths']['path_memorycard_photo_root']
 
         # Modules
         self.CFG_module_cull = self.config['Modules']['module_cull']
@@ -109,9 +114,9 @@ class Pipelineprocess():
             labels['unedited_filecount'] = f'Files waiting for editing: {len(get_files_in_directory(self.DIR_Unedited, file_ending=".dng"))}'
             labels['unexported_filecount'] = f'Files ready for export: {len(get_files_in_directory(self.DIR_Unedited, file_ending=self.CFG_metadata_filetype, content_filter="READYFOREXPORT"))}'
 
-            colors['button_color_photos'] = '#284b82'
+            colors['button_color_photos'] = "#A55935"
             colors['button_color_delete'] = '#822831'
-            colors['button_color_photos_getfiles'] = "#7a9645"
+            colors['button_color_photos_getfiles'] = "#b7a22a"
             
             colors['button_color_video'] = "#7C2882"
             colors['button_color_video_getfiles'] = "#7a9645"
@@ -153,8 +158,7 @@ class Pipelineprocess():
                 with ui.column().classes('w-full no-wrap').style('row-gap: 1rem'):
                     
                     label_getfiles = ui.label('')
-                    #ui.button('0. Get Files', on_click=lambda: copy_from_card(), color=colors['button_color_photos_getfiles']).classes('w-full')
-                    button_getfiles = ui.button('0. Get Files', on_click=lambda: copy_from_card(self.CFG_path_exiftool, self.CFG_RAW_filetype, self.DIR_Unculled), color=colors['button_color_photos_getfiles']).classes('w-full')
+                    button_getfiles = ui.button('0. Get Files', on_click=lambda: copy_from_card(self.CFG_path_memorycard_photo_root, self.CFG_path_exiftool, self.CFG_RAW_filetype, self.DIR_Unculled), color=colors['button_color_photos_getfiles']).classes('w-full')
                     ui.separator().classes('w-full')
                     
                     label_cull = ui.label('')
@@ -171,7 +175,7 @@ class Pipelineprocess():
                     ui.separator().classes('w-full')
 
                     label_export = ui.label('')    
-                    button_export = ui.button('5. Export', on_click=lambda: export(self.CFG_metadata_filetype, self.DIR_Unedited), color=colors['button_color_photos']).classes('w-full')
+                    button_export = ui.button('5. Export', on_click=lambda: export(self.CFG_metadata_filetype, self.DIR_Unedited, self.DIR_Exported, self.CFG_path_darktable_cli), color=colors['button_color_photos']).classes('w-full')
                     ui.separator().classes('w-full')
 
                     with ui.row().classes('w-full no-wrap'):

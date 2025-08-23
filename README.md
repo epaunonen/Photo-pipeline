@@ -1,7 +1,7 @@
 # Photo-pipeline
 
 
-<img src="icon.png" alt="Logo" width="300">
+<img src="banner.png" alt="Logo" width="300">
 
 ## Photos
 
@@ -45,3 +45,5 @@
     - https://pro.sony/ue_US/technology/professional-video-lut-look-up-table#TEME170401LutsFromSony-professional-video-lut-look-up-table
 - Flicker free video
     - https://www.red.com/tools#flicker-free-video
+
+- Remember to add sqlite3 to PATH on Windows systems!

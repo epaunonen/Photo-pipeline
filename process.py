@@ -13,8 +13,10 @@ class Pipelineprocess():
         # Program paths
         self.CFG_path_fastrawviewer = ''
         self.CFG_path_dxopureraw = ''
+        
         self.CFG_path_darktable = ''
         self.CFG_path_darktable_cli = ''
+        self.CFG_path_darktable_purgetool = ''
         
         self.CFG_path_exiftool = ''
         
@@ -48,7 +50,8 @@ class Pipelineprocess():
         self.DIR_Unculled_Rejected = '1_Unculled/_Rejected'
         self.DIR_Unedited = '2_Unedited'
         self.DIR_Exported = '3_Exported'
-        self.DIR_Raw_Archive = '4_Raw_Archive'
+        self.DIR_Raw_Archive = '4_Archive/Raws'
+        self.DIR_Edits_Archive = '4_Archive/Edits'
         
         # Helpers
         self.HELPER_n_of_files_to_be_deleted = 0
@@ -62,6 +65,7 @@ class Pipelineprocess():
         self.CFG_path_dxopureraw = self.config['Program paths']['path_dxopureraw']
         self.CFG_path_darktable = self.config['Program paths']['path_darktable']
         self.CFG_path_darktable_cli = self.config['Program paths']['path_darktable_cli']
+        self.CFG_path_darktable_purgetool = self.config['Program paths']['path_darktable_purgetool']
         
         self.CFG_path_exiftool = self.config['Program paths']['path_exiftool']
         
@@ -112,7 +116,7 @@ class Pipelineprocess():
             labels['unculled_filecount'] = f'Unculled files: {len(get_files_in_directory(self.DIR_Unculled, file_ending=self.CFG_RAW_filetype))}'
             labels['selected_filecount'] = f'Selected files: {len(get_files_in_directory(self.DIR_Unculled_Selected, file_ending=self.CFG_RAW_filetype))}'
             labels['unedited_filecount'] = f'Files waiting for editing: {len(get_files_in_directory(self.DIR_Unedited, file_ending=".dng"))}'
-            labels['unexported_filecount'] = f'Files ready for export: {len(get_files_in_directory(self.DIR_Unedited, file_ending=self.CFG_metadata_filetype, content_filter="READYFOREXPORT"))}'
+            labels['unexported_filecount'] = f"""Files ready for export: {len(get_files_in_directory(self.DIR_Unedited, file_ending=self.CFG_metadata_filetype, content_filter="READYFOREXPORT"))} | Rejected photos: {len(get_files_in_directory(self.DIR_Unedited, file_ending=self.CFG_metadata_filetype, content_filter='xmp:Rating="-1"'))}"""
 
             colors['button_color_photos'] = "#A55935"
             colors['button_color_delete'] = '#822831'
@@ -174,8 +178,11 @@ class Pipelineprocess():
                     button_edit = ui.button('4. Edit', on_click=lambda: edit(self.CFG_module_edit, self.CFG_path_darktable, self.DIR_Unedited), color=colors['button_color_photos']).classes('w-full')
                     ui.separator().classes('w-full')
 
-                    label_export = ui.label('')    
-                    button_export = ui.button('5. Export', on_click=lambda: export(self.CFG_metadata_filetype, self.DIR_Unedited, self.DIR_Exported, self.CFG_path_darktable_cli), color=colors['button_color_photos']).classes('w-full')
+                    label_export = ui.label('')
+                    checkbox_archive_on_export = ui.checkbox('On export: Archive photos and sidecars', value=True, on_change=None)
+                    checkbox_clear_rejected = ui.checkbox('On export: Clean up rejected photos', value=True, on_change=None)
+                    checkbox_run_dbpurge = ui.checkbox('On export: Purge darktable database', value=True, on_change=None)
+                    button_export = ui.button('5. Export', on_click=lambda: export(self.CFG_metadata_filetype, self.DIR_Unedited, self.DIR_Exported, self.DIR_Edits_Archive, self.CFG_path_darktable_cli, self.CFG_path_darktable_purgetool, checkbox_archive_on_export.value, checkbox_clear_rejected.value, checkbox_run_dbpurge.value), color=colors['button_color_photos']).classes('w-full')
                     ui.separator().classes('w-full')
 
                     with ui.row().classes('w-full no-wrap'):
@@ -217,7 +224,12 @@ class Pipelineprocess():
                         
             # Settings
             with ui.tab_panel(settings):
-                pass
+                
+                ui.separator().classes('w-full')
+                
+                with ui.row().classes('w-full no-wrap'):
+                    ui.button('Reset', on_click=lambda: None, color=colors['button_color_photos']).classes('w-1/2')
+                    ui.button('Save and reload', on_click=lambda: None, color=colors['button_color_photos_getfiles']).classes('w-1/2')
 
         ui.run(favicon="icon.png", title="Photo-pipeline")
 

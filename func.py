@@ -214,9 +214,9 @@ def archive_raws(CFG_archive_on_process, CFG_RAW_filetype, CFG_metadata_filetype
         if(os.path.isdir(DIR_Unculled_Selected)):
            
             # Obtain filenames for all files in the editing layer
-            files_in_edi = os.listdir(DIR_Unedited)
-            files_in_edi.remove('.donotremove')
-            filenames_in_edit = [item.split('.')[0] for item in files_in_edi]
+            files_in_edit = os.listdir(DIR_Unedited)
+            files_in_edit.remove('.donotremove')
+            filenames_in_edit = [item.split('.')[0] for item in files_in_edit]
            
             for file in os.listdir(DIR_Unculled_Selected):
                 filename = os.fsdecode(file)
@@ -274,13 +274,15 @@ def edit(CFG_module_edit, CFG_path_darktable, DIR_Unedited):
     
     
     
-async def export(CFG_metadata_filetype, DIR_Unedited, DIR_Exported, CFG_path_darktable_cli):
+async def export(CFG_metadata_filetype, DIR_Unedited, DIR_Exported, DIR_Edits_Archive, CFG_path_darktable_cli, CFG_path_darktable_purgetool, FLAG_archive_on_export, FLAG_clear_rejected, FLAG_run_dbpurge):
     """_summary_
 
     Args:
         CFG_metadata_filetype (_type_): _description_
         DIR_Unedited (_type_): _description_
     """
+    
+    #test_exif('D:\exiftool\exiftool.exe', "D:/Photo-pipeline/2_Unedited/20250704_00021.dng.xmp")
     
     xmps_for_archival = []
     files_for_export = []
@@ -297,26 +299,59 @@ async def export(CFG_metadata_filetype, DIR_Unedited, DIR_Exported, CFG_path_dar
                     if('READYFOREXPORT' in f.read()):
                         xmps_for_archival.append(filepath)
                         files_for_export.append(filepath[:-4])
-     
-    # this actually works :o
     
+    # export photos
     for file in files_for_export:
         
         outputname = file.split('/')[-1].split('.')[0]
         
+        # Determine destination
+        destination_year = outputname[0:4]
+        destination_month = outputname[4:6]
+        destination_day = outputname[6:8]
+        destination = DIR_Exported + '/' + destination_year + '/' + destination_month + '/' + destination_day
+        
+        # Create destination directory if missing
+        if(not os.path.isdir(DIR_Exported + '/' + destination_year)): os.mkdir(DIR_Exported + '/' + destination_year)
+        if(not os.path.isdir(DIR_Exported + '/' + destination_year + '/' + destination_month)): os.mkdir(DIR_Exported + '/' + destination_year + '/' + destination_month)
+        if(not os.path.isdir(DIR_Exported + '/' + destination_year + '/' + destination_month + '/' + destination_day)): os.mkdir(DIR_Exported + '/' + destination_year + '/' + destination_month + '/' + destination_day)
+        
+        
         export_command = []
         export_command.append(CFG_path_darktable_cli)
         export_command.append(file)
-        export_command.append(DIR_Exported + '/' + outputname + '.jpg')
+        export_command.append(destination + '/' + outputname + '.jpg')
         
-        print(export_command)
+        #print(export_command)
         
         p = subprocess.Popen(export_command)
         p.wait()
-                        
-    #print(xmps_for_archival)
-    #print(files_for_export)
+                 
+    # archive files
+    if FLAG_archive_on_export:
+        for file in files_for_export:
+            shutil.move(file, DIR_Edits_Archive)
+            
+        for file in xmps_for_archival:
+            shutil.move(file, DIR_Edits_Archive)
                 
+    # remove rejected images from darktable
+    if FLAG_clear_rejected:
+        sidecar_files = get_files_in_directory(DIR_Unedited, CFG_metadata_filetype, 'xmp:Rating="-1"')
+        for file in sidecar_files:
+            os.remove(os.getcwd() + '/' + DIR_Unedited + '/' + file)
+        
+        photo_files = [s.replace(CFG_metadata_filetype, '') for s in sidecar_files]
+        for file in photo_files:
+            os.remove(os.getcwd() + '/' + DIR_Unedited + '/' + file)
+                        
+    # run darktable db cleanup
+    if FLAG_run_dbpurge:
+        purge_command = []
+        purge_command.append(CFG_path_darktable_purgetool)
+        purge_command.append('--purge')
+    
+    p = subprocess.Popen(purge_command)
   
   
   
@@ -373,5 +408,8 @@ def test_exif(CFG_path_exiftool, image):
         #         print(f'{k} = {v}')
         
         # Get only datetime
-        d = et.get_tags(image, tags=["DateTimeOriginal"])
-        print(d[0]['EXIF:DateTimeOriginal'])
+        #d = et.get_tags(image, tags=["DateTimeOriginal"])
+        #print(d[0]['EXIF:DateTimeOriginal'])
+        
+        d = et.get_tags(image, tags=["Rating"])
+        print(d[0]['XMP:Rating'])

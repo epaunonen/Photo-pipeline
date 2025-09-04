@@ -201,25 +201,30 @@ class Pipelineprocess():
                         
                         button_getfiles.enabled = memory_card_found['value']
                         
+                        label_getfiles_video.set_text(labels['memorycard_status'])
+                        button_getfiles_video.enabled = memory_card_found['value']
+                        
+                    # This timer does not seem to recover from a lengthy process, e.g. file transfer or export
                     ui.timer(1.0, lambda: refresh_elements())
                         
                         
             # Video
             with ui.tab_panel(video):
                 
-                ui.button('0. Get Files', on_click=lambda: copy_from_card(), color=colors['button_color_video_getfiles']).classes('w-full')#.classes('col-span-2')
+                label_getfiles_video = ui.label('')
+                button_getfiles_video = ui.button('0. Get Files', on_click=lambda: None, color=colors['button_color_photos_getfiles']).classes('w-full')#.classes('col-span-2')
                 ui.separator().classes('w-full')
                 
-                ui.button('1. Convert', on_click=lambda: None, color=colors['button_color_video']).classes('w-full')
+                ui.button('1. Convert', on_click=lambda: None, color=colors['button_color_photos']).classes('w-full')
                 ui.separator().classes('w-full')
                 
-                ui.button('2. Edit', on_click=lambda: None, color=colors['button_color_video']).classes('w-full')
+                ui.button('2. Edit', on_click=lambda: None, color=colors['button_color_photos']).classes('w-full')
                 ui.separator().classes('w-full')
                 
                 with ui.row().classes('w-full no-wrap'):#('col-span-2 no-wrap'):
                         #ui.button(icon='delete_sweep', on_click=lambda: cleanup_rejected(self.CFG_delete_raws_with_missing_timestamp, self.CFG_keep_rejected_days, self.DIR_Unculled_Rejected, show, ui), color=button_color_delete).classes('w-1/2')
                         ui.space().classes('w-1/2')
-                        ui.button(icon='refresh', on_click=lambda: self.reload_config(refresh=True), color=colors['button_color_video']).classes('w-1/2')
+                        ui.button(icon='refresh', on_click=lambda: self.reload_config(refresh=True), color=colors['button_color_photos']).classes('w-1/2')
                         
                         
             # Settings

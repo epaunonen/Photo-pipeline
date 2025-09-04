@@ -59,13 +59,15 @@ def copy_from_card(CFG_path_memorycard_photo_root, CFG_path_exiftool, CFG_RAW_fi
     """
     
     # Recursively copy files only -> Unculled directory
-    for p in glob.glob(CFG_path_memorycard_photo_root, recursive=True):
+    files = glob.glob(CFG_path_memorycard_photo_root + '/**/*', recursive=True)
+    for p in files:
         if os.path.isfile(p):
             shutil.copy(p, DIR_Unculled)
     
-    
-    # Run rename for 
+    # Run rename for the copied files
     rename_raws(CFG_path_exiftool, CFG_RAW_filetype, DIR_Unculled)
+    
+    # TODO: should this also add additional metadata
     
 
 
@@ -190,7 +192,6 @@ def process_selected(CFG_module_denoise, CFG_path_dxopureraw, CFG_denoise_on_pro
     # All others are copied as is
     if(CFG_denoise_on_process == 'False'):
         pass
-    
     
     
     

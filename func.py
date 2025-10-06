@@ -331,9 +331,13 @@ async def export(CFG_metadata_filetype, DIR_Unedited, DIR_Exported, DIR_Edits_Ar
     # archive files
     if FLAG_archive_on_export:
         for file in files_for_export:
+            if os.path.isfile(DIR_Edits_Archive + '/' + file.split('/')[-1]):
+                os.remove(DIR_Edits_Archive + '/' + file.split('/')[-1])
             shutil.move(file, DIR_Edits_Archive)
             
         for file in xmps_for_archival:
+            if os.path.isfile(DIR_Edits_Archive + '/' + file.split('/')[-1]):
+                os.remove(DIR_Edits_Archive + '/' + file.split('/')[-1])
             shutil.move(file, DIR_Edits_Archive)
                 
     # remove rejected images from darktable

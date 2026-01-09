@@ -1,21 +1,10 @@
 [project]
 name = "photo-pipeline"
 version = "0.1.0"
-description = ""
-authors = [
-    {name = "Your Name",email = "you@example.com"}
-]
+description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.11"
 dependencies = [
-    "nicegui (>=2.20.0,<3.0.0)",
-    "pyexiftool (>=0.5.6,<0.6.0)"
+    "nicegui>=3.5.0",
+    "pyexiftool>=0.5.6",
 ]
-
-
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry]
-package-mode = false

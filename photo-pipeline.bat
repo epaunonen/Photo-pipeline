@@ -1,1 +1,1 @@
-poetry run python process.py
+uv run process.py

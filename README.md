@@ -1,9 +1,30 @@
 # Photo-pipeline
 
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+[![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE)
+
 
 <img src="banner.png" alt="Logo" width="300">
 
-## Photos
+## Usage
+
+**Install uv:** 
+```
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+**Run Photo-pipeline:**
+```
+uv run process.py
+```
+or
+```
+photo-pipeline.bat
+```
+
+
+## Supported tools for photos
 
 ### FastRawViewer
 
@@ -17,19 +38,11 @@
 
 - https://www.darktable.org/
 
-### xpano
-
-- https://github.com/krupkat/xpano
-
-### Sequator
-
-- https://sites.google.com/view/sequator/
-
 ### exiftool
 
 - https://exiftool.org/
 
-## Videos
+## Supported tools for video
 
 ### DaVinci Resolve
 
@@ -39,7 +52,7 @@
 
 - https://www.shutterencoder.com/
 
-### Other resources
+## Other resources
 
 - Sony LUTs 
     - https://pro.sony/ue_US/technology/professional-video-lut-look-up-table#TEME170401LutsFromSony-professional-video-lut-look-up-table
